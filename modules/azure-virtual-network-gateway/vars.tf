@@ -55,7 +55,7 @@ variable "private_ip_address_allocation" {
 variable "public_ip_address_allocation" {
   description = "Defines how the public IP address of the gateway's virtual interface is assigned. One of `Static` or `Dynamic`."
   type        = string
-  default     = "Static"
+  default     = "Dynamic"
 }
 
 variable "vpn_address_space" {
