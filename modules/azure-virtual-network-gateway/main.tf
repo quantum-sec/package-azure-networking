@@ -14,6 +14,15 @@ resource "azurerm_public_ip" "public_ip" {
 }
 
 resource "azurerm_virtual_network_gateway" "gateway" {
+  lifecycle {
+    ignore_changes = [
+      # Azure populates this with defaults when `enable_bgp` is `false`.
+      # Since we don't know the private address at deploy time, we can't set the default deterministically.
+      # We'll instead ignore these defaults as we don't currently use Express Route or BGP advertisements.
+      bgp_settings,
+    ]
+  }
+
   name                = var.name
   location            = var.location
   resource_group_name = var.resource_group_name
