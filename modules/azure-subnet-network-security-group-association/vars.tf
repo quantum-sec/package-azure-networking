@@ -4,6 +4,6 @@ variable "subnet_id" {
 }
 
 variable "network_security_group_id" {
-  description = "he ID of the Network Security Group which should be associated with the subnet."
+  description = "The ID of the Network Security Group which should be associated with the subnet."
   type        = string
 }
