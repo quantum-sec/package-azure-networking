@@ -1,5 +1,5 @@
 output "id" {
-  description = "The public ID of the IP."
+  description = "The ID of the public IP address."
   value       = azurerm_public_ip.public.id
 }
 
