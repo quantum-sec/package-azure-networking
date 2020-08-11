@@ -22,7 +22,7 @@ variable "tags" {
 variable "allocation_method" {
   description = "The default allocation method assigned to this IP address."
   type        = string
-  default     = "static"
+  default     = "Static"
 }
 
 variable "sku" {
