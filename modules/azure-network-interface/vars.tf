@@ -1,5 +1,5 @@
 variable "name" {
-  description = "The name of the  network interface."
+  description = "The name of the network interface."
   type        = string
 }
 
@@ -13,13 +13,13 @@ variable "location" {
   type        = string
 }
 
-variable "ip-name" {
-  description = "The name of the IP-Configuration."
+variable "ip_name" {
+  description = "The name of the IP configuration."
   type        = string
 }
 
 variable "subnet_id" {
-  description = "The id of the sub-net where this network interface will be located."
+  description = "The ID of the subnet where this network interface will be located."
   type        = string
 }
 
