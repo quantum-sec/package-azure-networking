@@ -41,7 +41,7 @@ resource "azurerm_virtual_network_gateway" "gateway" {
   }
 
   dynamic "bgp_settings" {
-    for_each = var.enable_bgp == true ? [1] : [0]
+    for_each = var.enable_bgp == true ? [1] : []
 
     content {
       asn             = var.bgp_asn
