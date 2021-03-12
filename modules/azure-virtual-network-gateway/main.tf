@@ -58,7 +58,7 @@ resource "azurerm_virtual_network_gateway" "gateway" {
       vpn_client_protocols = var.vpn_client_protocols
 
       dynamic "root_certificate" {
-        for_each = var.vpn_root_certificate_name != null ? [1] : [0]
+        for_each = var.vpn_root_certificate_name != null ? [1] : []
 
         content {
           name             = var.vpn_root_certificate_name
