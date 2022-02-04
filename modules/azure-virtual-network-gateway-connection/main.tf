@@ -27,6 +27,7 @@ resource "azurerm_local_network_gateway" "remote" {
   name                = "${var.name}-gateway"
   resource_group_name = var.resource_group_name
   location            = var.location
+  tags                = var.tags
 
   gateway_address = var.remote_gateway_address
   gateway_fqdn    = var.remote_gateway_fqdn != null && var.remote_gateway_address == null ? var.remote_gateway_fqdn : null
@@ -46,6 +47,7 @@ resource "azurerm_virtual_network_gateway_connection" "connection" {
   name                = "${var.name}-connection"
   location            = var.location
   resource_group_name = var.resource_group_name
+  tags                = var.tags
 
   type                       = "IPSec"
   virtual_network_gateway_id = var.virtual_network_gateway_id
