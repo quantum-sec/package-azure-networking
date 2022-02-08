@@ -13,6 +13,13 @@ resource "azurerm_public_ip" "public_ip" {
   resource_group_name = var.resource_group_name
 }
 
+locals {
+  vpn_auth_types = concat(
+    var.vpn_root_certificate_data != null ? ["Certificate"] : [],
+    var.vpn_aad_tenant != null ? ["AAD"] : [],
+  )
+}
+
 resource "azurerm_virtual_network_gateway" "gateway" {
   lifecycle {
     ignore_changes = [
@@ -57,14 +64,20 @@ resource "azurerm_virtual_network_gateway" "gateway" {
       address_space        = var.vpn_address_space
       vpn_client_protocols = var.vpn_client_protocols
 
+      vpn_auth_types = local.vpn_auth_types
+
       dynamic "root_certificate" {
-        for_each = var.vpn_root_certificate_name != null ? [1] : []
+        for_each = var.vpn_root_certificate_data != null ? [1] : []
 
         content {
           name             = var.vpn_root_certificate_name
           public_cert_data = var.vpn_root_certificate_data
         }
       }
+
+      aad_tenant   = var.vpn_aad_tenant
+      aad_audience = var.vpn_aad_audience
+      aad_issuer   = var.vpn_aad_issuer
     }
   }
 }
