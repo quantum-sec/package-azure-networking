@@ -65,6 +65,10 @@ resource "azurerm_virtual_network_gateway" "gateway" {
           public_cert_data = var.vpn_root_certificate_data
         }
       }
+
+      aad_tenant   = var.vpn_aad_tenant
+      aad_audience = var.vpn_aad_audience
+      aad_issuer   = var.vpn_aad_issuer
     }
   }
 }

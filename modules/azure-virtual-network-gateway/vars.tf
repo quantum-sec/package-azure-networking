@@ -66,11 +66,31 @@ variable "vpn_address_space" {
 variable "vpn_root_certificate_name" {
   description = "The name of the VPN root certificate."
   type        = string
+  default     = null
 }
 
 variable "vpn_root_certificate_data" {
   description = "The public certificate of the root certificate authority. The certificate must be provided in base64-encoded X.509 (PEM) format."
   type        = string
+  default     = null
+}
+
+variable "vpn_aad_tenant" {
+  description = "The AzureAD tenant URL (i.e. https://login.microsoftonline.com/{AZUREAD_TENANT_ID})."
+  type        = string
+  default     = null
+}
+
+variable "vpn_aad_audience" {
+  description = "The client ID of the Enterprise Application instance created in the hosting AzureAD tenant."
+  type        = string
+  default     = null
+}
+
+variable "vpn_aad_issuer" {
+  description = "The STS URL for the hosting AzureAD tenant. (i.e. https://sts.windows.net/{AZUREAD_TENANT_ID}/). Note that the trailing slash is required."
+  type        = string
+  default     = null
 }
 
 variable "vpn_client_protocols" {
