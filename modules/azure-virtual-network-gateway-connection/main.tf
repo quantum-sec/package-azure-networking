@@ -49,7 +49,7 @@ resource "azurerm_virtual_network_gateway_connection" "connection" {
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
-  type                       = "IPSec"
+  type                       = "IPsec"
   virtual_network_gateway_id = var.virtual_network_gateway_id
   local_network_gateway_id   = azurerm_local_network_gateway.remote.id
   connection_protocol        = var.connection_protocol
