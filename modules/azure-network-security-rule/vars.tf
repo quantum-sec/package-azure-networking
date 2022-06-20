@@ -14,58 +14,95 @@ variable "network_security_group_name" {
 }
 
 variable "description" {
-  description = "A description for this rule. Restricted to 140 characters."
+  description = "A description for this rule."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "protocol" {
-  description = "The network protocol to which this rule applies. One of `Tcp`, `Udp`, `Icmp`, or `*` which matches all."
+  description = "The network protocol to which this rule applies."
   type        = string
 }
 
 variable "access" {
-  description = "Specifies whether network traffic is allowed or denied. One of `Allow` or `Deny`."
+  description = "Specifies whether network traffic is allowed or denied."
   type        = string
 }
 
 variable "priority" {
-  description = "Specifies the priority of the rule. Any integer between `100` and `4096`. The lower the number, the higher the priority of the rule."
+  description = "Specifies the priority of the rule."
   type        = string
 }
 
 variable "direction" {
-  description = "Specifies whether the rule will be evaluated on incoming or outgoing traffic. One of `Inbound` or `Outbound`."
+  description = "Specifies whether the rule will be evaluated on incoming or outgoing traffic."
   type        = string
-  default     = "Inbound"
 }
 
+# This is required if `source_port_ranges` is not specified.
+variable "source_port_range" {
+  description = "Source Port or Range."
+  type        = string
+  default     = null
+}
+
+# This is required if `source_port_range` is not specified.
 variable "source_port_ranges" {
-  description = "A set of source ports or port ranges, each being an integer between `0` and `65535` or `*` to match any port."
+  description = "List of source ports or port ranges."
   type        = set(string)
+  default     = null
 }
 
+# This is required if `source_address_prefixes` is not specified.
+variable "source_address_prefix" {
+  description = "CIDR or source IP range or * to match any IP."
+  type        = string
+  default     = null
+}
+
+# This is required if `source_address_prefix` is not specified.
 variable "source_address_prefixes" {
-  description = "A list of source addresses, each being a CIDR block, `*` to match any IP, or tags such as `VirtualNetwork`, `AzureLoadBalancer`, or `Internet`."
+  description = "List of source address prefixes."
   type        = set(string)
+  default     = null
 }
 
 variable "source_application_security_group_ids" {
-  description = "A set of source Application Security Group IDs."
+  description = "List of source Application Security Group ID's."
   type        = set(string)
+  default     = null
 }
 
+# This is required if `destination_port_ranges` is not specified.
+variable "destination_port_range" {
+  description = "Destination Port or Range."
+  type        = string
+  default     = null
+}
+
+# This is required if `destination_port_range` is not specified.
 variable "destination_port_ranges" {
-  description = "A set of destination ports or port ranges, each being an integer between `0` and `65535` or `*` to match any port."
+  description = "List of destination ports or port ranges."
   type        = set(string)
+  default     = null
 }
 
+# This is required if `destination_address_prefixes` is not specified.
+variable "destination_address_prefix" {
+  description = "CIDR or destination IP range or * to match any IP."
+  type        = string
+  default     = null
+}
+
+# This is required if `destination_address_prefix` is not specified.
 variable "destination_address_prefixes" {
-  description = "A set of destination addresses, each being a CIDR block, `*` ro match any IP, or tags such as `VirtualNetwork`, `AzureLoadBlaancer`, or `Internat`."
+  description = "List of destination address prefixes."
   type        = set(string)
+  default     = null
 }
 
 variable "destination_application_security_group_ids" {
-  description = "A set of destination Application Security Group IDs."
+  description = "List of destination Application Security Group ID's."
   type        = set(string)
+  default     = null
 }
