@@ -9,7 +9,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | n/a |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.10.0 |
 
 ## Modules
 
@@ -35,7 +35,7 @@ No modules.
 | <a name="input_direction"></a> [direction](#input\_direction) | Specifies whether the rule will be evaluated on incoming or outgoing traffic. | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | The name of the network security rule. | `string` | n/a | yes |
 | <a name="input_network_security_group_name"></a> [network\_security\_group\_name](#input\_network\_security\_group\_name) | The name of the network security group to which this rule will be attached. | `string` | n/a | yes |
-| <a name="input_priority"></a> [priority](#input\_priority) | Specifies the priority of the rule. | `string` | n/a | yes |
+| <a name="input_priority"></a> [priority](#input\_priority) | Specifies the priority of the rule. | `number` | n/a | yes |
 | <a name="input_protocol"></a> [protocol](#input\_protocol) | The network protocol to which this rule applies. | `string` | n/a | yes |
 | <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | The name of the resource group in which this resource will be provisioned. | `string` | n/a | yes |
 | <a name="input_source_address_prefix"></a> [source\_address\_prefix](#input\_source\_address\_prefix) | CIDR or source IP range or * to match any IP. | `string` | `null` | no |
