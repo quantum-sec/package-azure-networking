@@ -17,26 +17,53 @@ variable "description" {
   description = "A description for this rule."
   type        = string
   default     = null
+  validation {
+    condition     = var.description == null ? true : length(var.description) <= 140
+    error_message = "Restricted to 140 characters."
+  }
 }
 
 variable "protocol" {
   description = "The network protocol to which this rule applies."
   type        = string
+  validation {
+    condition = anytrue([
+      var.protocol == "Tcp",
+      var.protocol == "Udp",
+      var.protocol == "Icmp",
+      var.protocol == "Esp",
+      var.protocol == "Ah",
+      var.protocol == "*"
+    ])
+    error_message = "Possible values include \"Tcp\", \"Udp\", \"Icmp\", \"Esp\", \"Ah\" or \"*\"."
+  }
 }
 
 variable "access" {
   description = "Specifies whether network traffic is allowed or denied."
   type        = string
+  validation {
+    condition     = var.access == "Allow" || var.access == "Deny"
+    error_message = "Possible values are \"Allow\" and \"Deny\"."
+  }
 }
 
 variable "priority" {
   description = "Specifies the priority of the rule."
-  type        = string
+  type        = number
+  validation {
+    condition     = var.priority >= 100 && var.priority <= 4096
+    error_message = "The value must be between 100 and 4096."
+  }
 }
 
 variable "direction" {
   description = "Specifies whether the rule will be evaluated on incoming or outgoing traffic."
   type        = string
+  validation {
+    condition     = var.direction == "Inbound" || var.direction == "Outbound"
+    error_message = "Possible values are \"Inbound\" and \"Outbound\"."
+  }
 }
 
 # This is required if `source_port_ranges` is not specified.
