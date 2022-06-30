@@ -41,6 +41,30 @@ variable "connection_protocol" {
   default     = "IKEv2"
 }
 
+variable "psk_use_special_characters" {
+  description = "Whether or not the generated PSK should include special characters."
+  type        = bool
+  default     = true
+}
+
+variable "psk_use_upper_alpha" {
+  description = "Whether or not the generated PSK should include uppercase alpha characters."
+  type        = bool
+  default     = true
+}
+
+variable "psk_use_lower_alpha" {
+  description = "Whether or not the generated PSK should include lowercase alpha characters."
+  type        = bool
+  default     = true
+}
+
+variable "psk_use_numbers" {
+  description = "Whether or not the generated PSK should include numbers."
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "A set of tags applied to this resource."
   type        = map(string)

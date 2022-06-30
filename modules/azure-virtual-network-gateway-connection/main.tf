@@ -37,10 +37,10 @@ resource "azurerm_local_network_gateway" "remote" {
 
 resource "random_password" "psk" {
   length  = 32
-  special = true
-  upper   = true
-  lower   = true
-  number  = true
+  special = var.psk_use_special_characters
+  upper   = var.psk_use_upper_alpha
+  lower   = var.psk_use_lower_alpha
+  number  = var.psk_use_numbers
 }
 
 resource "azurerm_virtual_network_gateway_connection" "connection" {
