@@ -49,4 +49,5 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_id"></a> [id](#output\_id) | The ID of the network security rule. |
+| <a name="output_name"></a> [name](#output\_name) | The name of network security rule. |
 <!-- END_TF_DOCS -->

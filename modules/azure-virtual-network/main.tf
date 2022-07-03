@@ -8,28 +8,20 @@ terraform {
 
 resource "azurerm_virtual_network" "network" {
   name                = var.name
-  location            = var.location
   resource_group_name = var.resource_group_name
   address_space       = var.address_space
-  dns_servers         = var.dns_servers
-  tags                = var.tags
+  location            = var.location
+  bgp_community       = var.bgp_community
 
   dynamic "ddos_protection_plan" {
-    for_each = var.ddos_protection_plan_id == null ? [] : [1]
-
+    for_each = var.ddos_protection_plan
     content {
-      id     = var.ddos_protection_plan_id
-      enable = true
+      id     = ddos_protection_plan.value["id"]
+      enable = ddos_protection_plan.value["enable"]
     }
   }
-
-  dynamic "subnet" {
-    for_each = var.subnets
-
-    content {
-      name           = subnet.value.name
-      address_prefix = subnet.value.address_prefix
-      security_group = subnet.value.security_group_id
-    }
-  }
+  dns_servers             = var.dns_servers
+  edge_zone               = var.edge_zone
+  flow_timeout_in_minutes = var.flow_timeout_in_minutes
+  tags                    = var.tags
 }
