@@ -4,80 +4,77 @@
 
 terraform {
   required_version = ">= 0.12"
-}
-
-resource "azurerm_public_ip" "public_ip" {
-  allocation_method   = var.public_ip_address_allocation
-  location            = var.location
-  name                = "${var.name}-public-ip"
-  resource_group_name = var.resource_group_name
-}
-
-locals {
-  vpn_auth_types = concat(
-    var.vpn_root_certificate_data != null ? ["Certificate"] : [],
-    var.vpn_aad_tenant != null ? ["AAD"] : [],
-  )
+  experiments      = [module_variable_optional_attrs]
 }
 
 resource "azurerm_virtual_network_gateway" "gateway" {
-  lifecycle {
-    ignore_changes = [
-      # Azure populates this with defaults when `enable_bgp` is `false`.
-      # Since we don't know the private address at deploy time, we can't set the default deterministically.
-      # We'll instead ignore these defaults as we don't currently use Express Route or BGP advertisements.
-      bgp_settings,
-    ]
-  }
 
-  name                = var.name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  sku      = var.sku
-  type     = var.type
-  vpn_type = var.vpn_type
-
-  enable_bgp = var.enable_bgp
-
-  ip_configuration {
-    name                          = "${var.name}-ip-config"
-    private_ip_address_allocation = var.private_ip_address_allocation
-    subnet_id                     = var.gateway_subnet_id
-    public_ip_address_id          = azurerm_public_ip.public_ip.id
-  }
-
-  dynamic "bgp_settings" {
-    for_each = var.enable_bgp == true ? [1] : []
-
+  dynamic "ip_configuration" {
+    for_each = var.ip_configuration
     content {
-      asn             = var.bgp_asn
-      peering_address = var.bgp_peering_address
-      peer_weight     = var.bgp_peer_weight
+      name                          = ip_configuration.value["name"]
+      private_ip_address_allocation = ip_configuration.value["private_ip_address_allocation"]
+      subnet_id                     = ip_configuration.value["subnet_id"]
+      public_ip_address_id          = ip_configuration.value["public_ip_address_id"]
     }
   }
+  location                         = var.location
+  name                             = var.name
+  resource_group_name              = var.resource_group_name
+  sku                              = var.vpn_type == "PolicyBased" ? "Basic" : var.sku
+  type                             = var.sku == "UltraPerformance" ? "ExpressRoute" : var.type
+  active_active                    = var.active_active
+  default_local_network_gateway_id = var.default_local_network_gateway_id
+  edge_zone                        = var.edge_zone
+  enable_bgp                       = var.enable_bgp
+
+  dynamic "bgp_settings" {
+    for_each = var.bgp_settings
+    content {
+      asn = bgp_settings.value["asn"]
+
+      dynamic "peering_addresses" {
+        for_each = lookup(bgp_settings.value, "peering_addresses", null) != null ? bgp_settings.value["peering_addresses"] : []
+        content {
+          ip_configuration_name = peering_addresses.value["ip_configuration_name"]
+          apipa_addresses       = peering_addresses.value["apipa_addresses"]
+        }
+      }
+      peer_weight = bgp_settings.value["peer_weight"]
+    }
+  }
+  generation                 = var.generation
+  private_ip_address_enabled = var.private_ip_address_enabled
+  tags                       = var.tags
 
   dynamic "vpn_client_configuration" {
-    for_each = var.type == "Vpn" ? [1] : []
-
+    for_each = var.vpn_client_configuration
     content {
-      address_space        = var.vpn_address_space
-      vpn_client_protocols = var.vpn_client_protocols
-
-      vpn_auth_types = local.vpn_auth_types
+      address_space = vpn_client_configuration.value["address_space"]
+      aad_tenant    = vpn_client_configuration.value["aad_tenant"]
+      aad_audience  = vpn_client_configuration.value["aad_audience"]
+      aad_issuer    = vpn_client_configuration.value["aad_issuer"]
 
       dynamic "root_certificate" {
-        for_each = var.vpn_root_certificate_data != null ? [1] : []
-
+        for_each = lookup(vpn_client_configuration.value, "root_certificate", null) != null ? vpn_client_configuration.value["root_certificate"] : []
         content {
-          name             = var.vpn_root_certificate_name
-          public_cert_data = var.vpn_root_certificate_data
+          name             = root_certificate.value["name"]
+          public_cert_data = root_certificate.value["public_cert_data"]
         }
       }
 
-      aad_tenant   = var.vpn_aad_tenant
-      aad_audience = var.vpn_aad_audience
-      aad_issuer   = var.vpn_aad_issuer
+      dynamic "revoked_certificate" {
+        for_each = lookup(vpn_client_configuration.value, "revoked_certificate", null) != null ? vpn_client_configuration.value["revoked_certificate"] : []
+        content {
+          name       = vpn_client_configuration.value["name"]
+          thumbprint = vpn_client_configuration.value["thumbprint"]
+        }
+      }
+      radius_server_address = vpn_client_configuration.value["radius_server_address"]
+      radius_server_secret  = vpn_client_configuration.value["radius_server_secret"]
+      vpn_client_protocols  = vpn_client_configuration.value["vpn_client_protocols"]
+      vpn_auth_types        = vpn_client_configuration.value["vpn_auth_types"]
     }
   }
+  vpn_type = var.vpn_type
 }
