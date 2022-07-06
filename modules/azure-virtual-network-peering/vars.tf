@@ -21,13 +21,13 @@ variable "resource_group_name" {
 variable "allow_virtual_network_access" {
   description = "Whether or not clients in the remote virtual network can access clients in the local virtual network."
   type        = bool
-  default     = true
+  default     = null
 }
 
 variable "allow_forwarded_traffic" {
   description = "Whether or not forwarded traffic from clients in the remote virtual network is allowed."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "allow_gateway_transit" {
@@ -37,7 +37,7 @@ variable "allow_gateway_transit" {
 }
 
 variable "use_remote_gateways" {
-  description = "Wehther or not remote gateways can be used on the local virtual network."
+  description = "Whether or not remote gateways can be used on the local virtual network."
   type        = bool
-  default     = false
+  default     = null
 }
