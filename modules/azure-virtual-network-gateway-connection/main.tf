@@ -1,57 +1,62 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# DEPLOY A SITE-TO-SITE VPN CONNECTION
+# DEPLOY A VIRTUAL NETWORK GATEWAY CONNECTION
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 terraform {
   required_version = ">= 0.12"
-}
-
-locals {
-  remote_gateway_address = var.remote_gateway_address != null ? var.remote_gateway_address : ""
-  remote_gateway_fqdn    = var.remote_gateway_fqdn != null ? var.remote_gateway_fqdn : ""
-}
-
-# This resource is a workaround for the lack of multi-value support in `validation` blocks and the lack of custom error support.
-# The latter is being discussed here: https://github.com/hashicorp/terraform/issues/15469
-# And a (pretty stale) PR is open: https://github.com/hashicorp/terraform/pull/25088
-resource "null_resource" "remote_gateway_validation" {
-  provisioner "local-exec" {
-    command     = "if [[ -z '${local.remote_gateway_address}' ]] && [[ -z '${local.remote_gateway_fqdn}' ]]; then echo 'Either remote_gateway_address or remote_gateway_fqdn must be set.'; exit 1; fi"
-    interpreter = ["bash", "-c"]
-  }
-}
-
-resource "azurerm_local_network_gateway" "remote" {
-  depends_on = [null_resource.remote_gateway_validation]
-
-  name                = "${var.name}-gateway"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
-
-  gateway_address = var.remote_gateway_address
-  gateway_fqdn    = var.remote_gateway_fqdn != null && var.remote_gateway_address == null ? var.remote_gateway_fqdn : null
-
-  address_space = var.remote_address_space
-}
-
-resource "random_password" "psk" {
-  length  = 32
-  special = var.psk_use_special_characters
-  upper   = var.psk_use_upper_alpha
-  lower   = var.psk_use_lower_alpha
-  number  = var.psk_use_numbers
+  experiments      = [module_variable_optional_attrs]
 }
 
 resource "azurerm_virtual_network_gateway_connection" "connection" {
-  name                = "${var.name}-connection"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
+  name                            = var.name
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  type                            = var.type
+  virtual_network_gateway_id      = var.virtual_network_gateway_id
+  authorization_key               = var.type == "ExpressRoute" ? var.authorization_key : null
+  dpd_timeout_seconds             = var.dpd_timeout_seconds
+  express_route_circuit_id        = var.type == "ExpressRoute" ? var.express_route_circuit_id : null
+  peer_virtual_network_gateway_id = var.type == "Vnet2Vnet" ? var.peer_virtual_network_gateway_id : null
+  local_azure_ip_address_enabled  = var.local_azure_ip_address_enabled
+  local_network_gateway_id        = var.type == "IPsec" ? var.local_network_gateway_id : null
+  routing_weight                  = var.routing_weight
+  shared_key                      = var.shared_key
+  connection_mode                 = var.connection_mode
+  connection_protocol             = var.connection_protocol
+  enable_bgp                      = var.enable_bgp
 
-  type                       = "IPsec"
-  virtual_network_gateway_id = var.virtual_network_gateway_id
-  local_network_gateway_id   = azurerm_local_network_gateway.remote.id
-  connection_protocol        = var.connection_protocol
-  shared_key                 = random_password.psk.result
+  dynamic "custom_bgp_addresses" {
+    for_each = var.custom_bgp_addresses
+    content {
+      primary   = custom_bgp_addresses.value["primary"]
+      secondary = custom_bgp_addresses.value["secondary"]
+    }
+  }
+  express_route_gateway_bypass       = var.type == "ExpressRoute" ? var.express_route_gateway_bypass : null
+  egress_nat_rule_ids                = var.egress_nat_rule_ids
+  ingress_nat_rule_ids               = var.ingress_nat_rule_ids
+  use_policy_based_traffic_selectors = var.ipsec_policy != [] ? var.use_policy_based_traffic_selectors : null
+
+  dynamic "ipsec_policy" {
+    for_each = var.ipsec_policy
+    content {
+      dh_group         = ipsec_policy.value["dh_group"]
+      ike_encryption   = ipsec_policy.value["ike_encryption"]
+      ike_integrity    = ipsec_policy.value["ike_integrity"]
+      ipsec_encryption = ipsec_policy.value["ipsec_encryption"]
+      ipsec_integrity  = ipsec_policy.value["ipsec_integrity"]
+      pfs_group        = ipsec_policy.value["pfs_group"]
+      sa_datasize      = ipsec_policy.value["sa_datasize"]
+      sa_lifetime      = ipsec_policy.value["sa_lifetime"]
+    }
+  }
+
+  dynamic "traffic_selector_policy" {
+    for_each = var.traffic_selector_policy
+    content {
+      local_address_cidrs  = traffic_selector_policy.value["local_address_cidrs"]
+      remote_address_cidrs = traffic_selector_policy.value["remote_address_cidrs"]
+    }
+  }
+  tags = var.tags
 }
