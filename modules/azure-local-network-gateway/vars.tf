@@ -29,18 +29,23 @@ variable "bgp_settings" {
   default = []
 }
 
-# This is required if `gateway_fqdn` is not specified.
-variable "gateway_address" {
-  description = "The gateway IP address to connect with."
-  type        = string
-  default     = null
-}
-
-# This is required if `gateway_address` is not specified.
-variable "gateway_fqdn" {
-  description = "The gateway FQDN to connect with."
-  type        = string
-  default     = null
+variable "gateway" {
+  description = <<EOF
+gateway_address - The gateway IP address to connect with.
+gateway_fqdn - The gateway FQDN to connect with.
+EOF
+  type = object({
+    address = optional(string)
+    fqdn    = optional(string)
+  })
+  default = {
+    address = null
+    fqdn    = null
+  }
+  validation {
+    condition     = !(var.gateway.address == null && var.gateway.fqdn == null)
+    error_message = "Either of \"gateway_address\" or \"gateway_fqdn\" is required if the other is not specified."
+  }
 }
 
 variable "tags" {

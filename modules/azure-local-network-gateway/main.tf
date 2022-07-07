@@ -21,7 +21,7 @@ resource "azurerm_local_network_gateway" "remote" {
       peer_weight         = bgp_settings.value["peer_weight"]
     }
   }
-  gateway_address = var.gateway_address
-  gateway_fqdn    = var.gateway_fqdn
+  gateway_address = var.gateway.address
+  gateway_fqdn    = var.gateway.fqdn
   tags            = var.tags
 }

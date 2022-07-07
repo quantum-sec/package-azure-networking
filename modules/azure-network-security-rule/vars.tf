@@ -66,32 +66,50 @@ variable "direction" {
   }
 }
 
-# This is required if `source_port_ranges` is not specified.
-variable "source_port_range" {
-  description = "Source Port or Range."
-  type        = string
-  default     = null
+variable "source_port" {
+  description = <<EOF
+source_port_range - Source Port or Range. Integer or range between `0` and `65535` or `*` to match any.
+source_port_ranges - List of source ports or port ranges.
+EOF
+  type = object({
+    range  = optional(string)
+    ranges = optional(set(string))
+  })
+  default = {
+    range  = "*"
+    ranges = null
+  }
+  validation {
+    condition     = !(var.source_port.range == null && var.source_port.ranges == null)
+    error_message = "Either of \"source_port_range\" or \"source_port_ranges\" is required if the other is not specified."
+  }
+  validation {
+    condition     = !(var.source_port.range != null && var.source_port.ranges != null)
+    error_message = "\"source_port_range\" and \"source_port_ranges\" are mutually exclusive."
+  }
 }
 
-# This is required if `source_port_range` is not specified.
-variable "source_port_ranges" {
-  description = "List of source ports or port ranges."
-  type        = set(string)
-  default     = null
-}
-
-# This is required if `source_address_prefixes` is not specified.
-variable "source_address_prefix" {
-  description = "CIDR or source IP range or * to match any IP."
-  type        = string
-  default     = null
-}
-
-# This is required if `source_address_prefix` is not specified.
-variable "source_address_prefixes" {
-  description = "List of source address prefixes."
-  type        = set(string)
-  default     = null
+variable "source_address" {
+  description = <<EOF
+source_address_prefix - CIDR or source IP range or `*` to match any IP. Tags such as `VirtualNetwork`, `AzureLoadBalancer` and `Internet` can also be used.
+source_address_prefixes - List of source address prefixes. Tags may not be used.
+EOF
+  type = object({
+    prefix   = optional(string)
+    prefixes = optional(set(string))
+  })
+  default = {
+    prefix   = null
+    prefixes = null
+  }
+  validation {
+    condition     = !(var.source_address.prefix == null && var.source_address.prefixes == null)
+    error_message = "Either of \"source_address_prefix\" or \"source_address_prefixes\" is required if the other is not specified."
+  }
+  validation {
+    condition     = !(var.source_address.prefix != null && var.source_address.prefixes != null)
+    error_message = "\"source_address_prefix\" and \"source_address_prefixes\" are mutually exclusive."
+  }
 }
 
 variable "source_application_security_group_ids" {
@@ -100,32 +118,50 @@ variable "source_application_security_group_ids" {
   default     = null
 }
 
-# This is required if `destination_port_ranges` is not specified.
-variable "destination_port_range" {
-  description = "Destination Port or Range."
-  type        = string
-  default     = null
+variable "destination_port" {
+  description = <<EOF
+destination_port_range - Destination Port or Range. Integer or range between `0` and `65535` or `*` to match any.
+destination_port_ranges - List of destination ports or port ranges.
+EOF
+  type = object({
+    range  = optional(string)
+    ranges = optional(set(string))
+  })
+  default = {
+    range  = null
+    ranges = null
+  }
+  validation {
+    condition     = !(var.destination_port.range == null && var.destination_port.ranges == null)
+    error_message = "Either of \"destination_port_range\" or \"destination_port_ranges\" is required if the other is not specified."
+  }
+  validation {
+    condition     = !(var.destination_port.range != null && var.destination_port.ranges != null)
+    error_message = "\"destination_port_range\" and \"destination_port_ranges\" are mutually exclusive."
+  }
 }
 
-# This is required if `destination_port_range` is not specified.
-variable "destination_port_ranges" {
-  description = "List of destination ports or port ranges."
-  type        = set(string)
-  default     = null
-}
-
-# This is required if `destination_address_prefixes` is not specified.
-variable "destination_address_prefix" {
-  description = "CIDR or destination IP range or * to match any IP."
-  type        = string
-  default     = null
-}
-
-# This is required if `destination_address_prefix` is not specified.
-variable "destination_address_prefixes" {
-  description = "List of destination address prefixes."
-  type        = set(string)
-  default     = null
+variable "destination_address" {
+  description = <<EOF
+destination_address_prefix - CIDR or destination IP range or `*` to match any IP. Tags such as `VirtualNetwork`, `AzureLoadBalancer` and `Internet` can also be used.
+destination_address_prefixes - List of destination address prefixes. Tags may not be used.
+EOF
+  type = object({
+    prefix   = optional(string)
+    prefixes = optional(set(string))
+  })
+  default = {
+    prefix   = null
+    prefixes = null
+  }
+  validation {
+    condition     = !(var.destination_address.prefix == null && var.destination_address.prefixes == null)
+    error_message = "Either of \"destination_address_prefix\" or \"destination_address_prefixes\" is required if the other is not specified."
+  }
+  validation {
+    condition     = !(var.destination_address.prefix != null && var.destination_address.prefixes != null)
+    error_message = "\"destination_address_prefix\" and \"destination_address_prefixes\" are mutually exclusive."
+  }
 }
 
 variable "destination_application_security_group_ids" {
