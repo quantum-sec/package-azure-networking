@@ -75,10 +75,6 @@ EOF
     range  = optional(string)
     ranges = optional(set(string))
   })
-  default = {
-    range  = "*"
-    ranges = null
-  }
   validation {
     condition     = !(var.source_port.range == null && var.source_port.ranges == null)
     error_message = "Either of \"source_port_range\" or \"source_port_ranges\" is required if the other is not specified."
@@ -98,10 +94,6 @@ EOF
     prefix   = optional(string)
     prefixes = optional(set(string))
   })
-  default = {
-    prefix   = null
-    prefixes = null
-  }
   validation {
     condition     = !(var.source_address.prefix == null && var.source_address.prefixes == null)
     error_message = "Either of \"source_address_prefix\" or \"source_address_prefixes\" is required if the other is not specified."
@@ -127,10 +119,6 @@ EOF
     range  = optional(string)
     ranges = optional(set(string))
   })
-  default = {
-    range  = null
-    ranges = null
-  }
   validation {
     condition     = !(var.destination_port.range == null && var.destination_port.ranges == null)
     error_message = "Either of \"destination_port_range\" or \"destination_port_ranges\" is required if the other is not specified."
@@ -150,10 +138,6 @@ EOF
     prefix   = optional(string)
     prefixes = optional(set(string))
   })
-  default = {
-    prefix   = null
-    prefixes = null
-  }
   validation {
     condition     = !(var.destination_address.prefix == null && var.destination_address.prefixes == null)
     error_message = "Either of \"destination_address_prefix\" or \"destination_address_prefixes\" is required if the other is not specified."
