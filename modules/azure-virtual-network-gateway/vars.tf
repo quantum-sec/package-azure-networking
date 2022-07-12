@@ -17,14 +17,6 @@ variable "ip_configuration" {
     ])
     error_message = "Valid options for `ip_configuration.private_ip_address_allocation` are \"Static\" or \"Dynamic\"."
   }
-  validation {
-    condition = alltrue([
-      # TODO: change to endswith()
-      # https://github.com/hashicorp/terraform/pull/31220
-      for ip_config in var.ip_configuration : can(regex("GatewaySubnet$", ip_config["subnet_id"]))
-    ])
-    error_message = "It is mandatory that the associated subnet is named \"GatewaySubnet\"."
-  }
 }
 
 variable "location" {
@@ -176,10 +168,12 @@ variable "vpn_client_configuration" {
   validation {
     condition = alltrue([
       for vpn_client_config in var.vpn_client_configuration : (
-        lookup(vpn_client_config, "vpn_client_protocols", null) == null ? true : anytrue([
-          vpn_client_config["vpn_client_protocols"] == "SSTP",
-          vpn_client_config["vpn_client_protocols"] == "IkeV2",
-          vpn_client_config["vpn_client_protocols"] == "OpenVPN"
+        lookup(vpn_client_config, "vpn_client_protocols", null) == null ? true : alltrue([
+          for vpn_client_protocol in vpn_client_config["vpn_client_protocols"] : anytrue([
+            vpn_client_config["vpn_client_protocols"] == "SSTP",
+            vpn_client_config["vpn_client_protocols"] == "IkeV2",
+            vpn_client_config["vpn_client_protocols"] == "OpenVPN"
+          ])
         ])
       )
     ])
