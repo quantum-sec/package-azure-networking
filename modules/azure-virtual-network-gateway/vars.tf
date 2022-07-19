@@ -170,9 +170,9 @@ variable "vpn_client_configuration" {
       for vpn_client_config in var.vpn_client_configuration : (
         lookup(vpn_client_config, "vpn_client_protocols", null) == null ? true : alltrue([
           for vpn_client_protocol in vpn_client_config["vpn_client_protocols"] : anytrue([
-            vpn_client_config["vpn_client_protocols"] == "SSTP",
-            vpn_client_config["vpn_client_protocols"] == "IkeV2",
-            vpn_client_config["vpn_client_protocols"] == "OpenVPN"
+            vpn_client_protocol == "SSTP",
+            vpn_client_protocol == "IkeV2",
+            vpn_client_protocol == "OpenVPN"
           ])
         ])
       )
