@@ -59,7 +59,7 @@ resource "azurerm_virtual_network_gateway" "gateway" {
         for_each = lookup(vpn_client_configuration.value, "root_certificate", null) != null ? vpn_client_configuration.value["root_certificate"] : []
         content {
           name             = root_certificate.value["name"]
-          public_cert_data = root_certificate.value["public_cert_data"]
+          public_cert_data = try(base64encode(trimspace(replace(root_certificate.value["public_cert_data"], "/[-]+(BEGIN|END) CERTIFICATE[-]+/", ""))), null)
         }
       }
 
