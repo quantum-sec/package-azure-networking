@@ -10,7 +10,7 @@ terraform {
       version = ">= 3.0"
     }
   }
-  experiments      = [module_variable_optional_attrs]
+  experiments = [module_variable_optional_attrs]
 }
 
 resource "azurerm_virtual_network_gateway_connection" "connection" {
@@ -41,7 +41,7 @@ resource "azurerm_virtual_network_gateway_connection" "connection" {
   express_route_gateway_bypass       = var.type == "ExpressRoute" ? var.express_route_gateway_bypass : null
   egress_nat_rule_ids                = var.egress_nat_rule_ids
   ingress_nat_rule_ids               = var.ingress_nat_rule_ids
-  use_policy_based_traffic_selectors = var.ipsec_policy != [] ? var.use_policy_based_traffic_selectors : null
+  use_policy_based_traffic_selectors = length(var.ipsec_policy) != 0 ? var.use_policy_based_traffic_selectors : null
 
   dynamic "ipsec_policy" {
     for_each = var.ipsec_policy

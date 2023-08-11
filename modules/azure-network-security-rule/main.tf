@@ -10,7 +10,7 @@ terraform {
       version = ">= 3.0"
     }
   }
-  experiments      = [module_variable_optional_attrs]
+  experiments = [module_variable_optional_attrs]
 }
 
 resource "azurerm_network_security_rule" "rule" {
